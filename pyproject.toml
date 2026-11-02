@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mev-cadence"
+version = "1.1.0"
+description = "Micro-eviction session memory plugin for Hermes Agent"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [{ name = "mev-cadence contributors" }]
+dependencies = []
+
+[tool.setuptools]
+packages = ["mev_cadence", "micro_eviction"]
+
+[tool.setuptools.package-dir]
+mev_cadence = "hermes_plugin/mev_cadence"
+micro_eviction = "micro_eviction"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,9 @@
+# mev-cadence config example — copy into ~/.hermes/config.yaml plugins.entries.mev-cadence.settings
+seat_label: desktop-main
+desktop_seat_label: desktop-main
+ledger_dir: ~/.hermes/mev-cadence/ledgers
+campaign_root: ~/.mev-cadence
+seat_state_root: ~/.mev-cadence/seat-state
+log_path: ~/icm-knowledge-vault/log.md
+engraphis_db: ~/.engraphis/memory.db
+tools_dir: ~/.mev-cadence/tools

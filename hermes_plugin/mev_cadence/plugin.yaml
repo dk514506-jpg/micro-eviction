@@ -1,0 +1,62 @@
+name: mev-cadence
+label: MEV Cadence
+kind: standalone
+version: "1.1.0"
+author: "roof campaign (cmd seat builder)"
+description: >-
+  Micro-eviction every-turn cadence for Hermes (CHARGE-MEV-PLUGIN-CADENCE-2026-10-30
+  + FOLLOWUP-2026-10-30; Dallas rulings 2026-10-28 items 3-4 + 2026-10-30
+  clarify). A post_llm_call observer that, from turn ordinal 6 onward, slices
+  the delta since the last processed boundary (plus compaction-exit slices)
+  through the frozen micro-eviction pipeline and stages the records into the
+  mev-staging Engraphis workspace ONLY via the existing sink path; mirrors 75k
+  seat-state checkpoints as one dated summary entry per checkpoint into the
+  knowledge-vault log.md (Task A format: `## [YYYY-MM-DD] state | <seat-label>
+  checkpoint NN`, append-only, idempotent per seat-label+NN; full record stays
+  in log/seat-state/); and writes desktop-session 75k state notes (Task B) into
+  log/seat-state/<desktop_seat_label>/ with INDEX.md, cmd-seat schema, measured
+  on the session_model_usage SUM(input_tokens) basis (DESIGN-75K-ADAPTER §2.1).
+  Honours MEV_VAULT_HOOK_OFF; fails closed on vault errors; never raises into
+  the host turn pipeline. Build-and-test artifact: not installed into
+  ~/.hermes/plugins/.
+requires_hermes: ">=0.21.5"
+provides_tools: []
+provides_hooks:
+  - post_llm_call
+config_schema:
+  type: object
+  additionalProperties: false
+  properties:
+    campaign_root:
+      type: string
+      description: "micro-eviction campaign tree root (default: campaigns/bench/micro-eviction)"
+    db_path:
+      type: string
+      description: "Hermes session store state.db (default: <HERMES_HOME>/state.db)"
+    ledger_dir:
+      type: string
+      description: "durable slice ledger + cursor dir (default: <campaign_root>/ledgers)"
+    seat_label:
+      type: string
+      description: "75k seat label for the state-record mirror; unset = mirror duty inert"
+    seat_state_root:
+      type: string
+      description: "vault root holding log/seat-state (default: MEV_SEAT_STATE_ROOT env, else ~/.mev-cadence/seat-state)"
+    log_path:
+      type: string
+      description: "knowledge-vault summary log (default: ~/icm-knowledge-vault/log.md)"
+    engraphis_db:
+      type: string
+      description: "Engraphis store path for the light staging recount (default: ENGRAPHIS_LIVE_DB or ~/.engraphis/memory.db)"
+    t2_llm:
+      type: boolean
+      description: "bind the T2 fallback transport (default false: mechanical T1 only)"
+    desktop_seat_label:
+      type: string
+      description: "Task B desktop/hermes 75k seat label (notes into log/seat-state/<label>/); unset = desktop duty inert"
+    desktop_session_id:
+      type: string
+      description: "explicit desktop session pin; unset = pin-once at the first measured fire (watchdog R-E pin discipline)"
+    tools_dir:
+      type: string
+      description: "tools dir holding seat75k.py (INTERVAL single source, N-2); optional — default ~/.mev-cadence/tools"
